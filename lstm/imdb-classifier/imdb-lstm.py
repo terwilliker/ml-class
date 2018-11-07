@@ -15,12 +15,12 @@ config = wandb.config
 
 # set parameters:
 config.vocab_size = 1000
-config.maxlen = 300
+config.maxlen = 70
 config.batch_size = 32
-config.embedding_dims = 50
-config.filters = 250
+config.embedding_dims = 10
+config.filters = 70
 config.kernel_size = 3
-config.hidden_dims = 100
+config.hidden_dims = 50
 config.epochs = 10
 
 (X_train, y_train), (X_test, y_test) = imdb.load_imdb()
@@ -37,7 +37,10 @@ model = Sequential()
 model.add(Embedding(config.vocab_size,
                     config.embedding_dims,
                     input_length=config.maxlen))
+model.add(LSTM(config.hidden_dims, activation="sigmoid", return_sequences=True))
+# for deep lstm
 model.add(LSTM(config.hidden_dims, activation="sigmoid"))
+
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',

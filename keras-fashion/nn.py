@@ -9,11 +9,14 @@ from wandb.keras import WandbCallback
 # logging code
 run = wandb.init()
 config = run.config
-config.epochs = 100
+config.epochs = 30
 config.lr = 0.01
 config.layers = 3
 config.dropout = 0.4
 config.hidden_layer_1_size = 128
+config.first_layer_convs = 32
+config.first_layer_conv_width = 3
+config.first_layer_conv_height = 3
 
 # load data
 (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
@@ -26,15 +29,24 @@ img_height = X_train.shape[2]
 labels = ["T-shirt/top", "Trouser", "Pullover", "Dress",
           "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
 
+print(img_width)
+print(img_height)
+
 # one hot encode outputs
 y_train = np_utils.to_categorical(y_train)
 y_test = np_utils.to_categorical(y_test)
 
 num_classes = y_train.shape[1]
 
+
 # create model
 model = Sequential()
-#model.add(Reshape((img_width, img_height, 1), input_shape=(img_width,img_height)))
+model.add(Reshape((img_width, img_height, 1), input_shape=(img_width,img_height)))
+model.add(Conv2D(8,
+    (config.first_layer_conv_width, config.first_layer_conv_height),
+    input_shape=(img_width,img_height,1),
+    activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten(input_shape=(img_width, img_height)))
 model.add(Dropout(config.dropout))
 model.add(Dense(config.hidden_layer_1_size, activation='relu'))

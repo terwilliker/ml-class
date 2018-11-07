@@ -16,7 +16,7 @@ wandb.init()
 config = wandb.config
 
 config.repeated_predictions = True
-config.look_back = 4
+config.look_back = 20
 
 def load_data(data_type="airline"):
     if data_type == "flu":
@@ -39,7 +39,7 @@ def create_dataset(dataset):
         dataY.append(dataset[i + config.look_back])
     return np.array(dataX), np.array(dataY)
 
-data = load_data("sin")
+data = load_data("airline")
     
 # normalize data to between 0 and 1
 max_val = max(data)
@@ -54,14 +54,24 @@ test = data[split:]
 trainX, trainY = create_dataset(train)
 testX, testY = create_dataset(test)
 
+print (trainX.shape)
+print (trainX)
+print (testX.shape)
+#exit()
+
+
 trainX = trainX[:, :, np.newaxis]
 testX = testX[:, :, np.newaxis]
 
 # create and fit the RNN
 model = Sequential()
-model.add(SimpleRNN(1, input_shape=(config.look_back,1 )))
+#model.add(SimpleRNN(200, input_shape=(config.look_back,1 )))
+#model.add(Dropout(.3))
+model.add(LSTM(200, input_shape=(config.look_back,1 )))
 model.compile(loss='mae', optimizer='rmsprop')
-model.fit(trainX, trainY, epochs=1000, batch_size=20, validation_data=(testX, testY),  callbacks=[WandbCallback(), PlotCallback(trainX, trainY, testX, testY, config.look_back)])
+#model.add(Dropout(.3))
+model.add(Dense(1))
+model.fit(trainX, trainY, epochs=500, batch_size=20, validation_data=(testX, testY),  callbacks=[WandbCallback(), PlotCallback(trainX, trainY, testX, testY, config.look_back)])
 
 
 

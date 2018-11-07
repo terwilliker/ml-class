@@ -28,6 +28,8 @@ config.step = 3
 text = io.open(config.file, encoding='utf-8').read()
 chars = sorted(list(set(text)))
 
+print(chars.shapes)
+
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
